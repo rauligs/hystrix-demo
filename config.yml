@@ -1,3 +1,8 @@
+defaultHystrixConfig:
+  hystrix.command.DeviceServiceDependency.execution.isolation.thread.timeoutInMilliseconds: 2000
+  hystrix.threadpool.PinCheckService.maxQueueSize: 50
+  hystrix.threadpool.PinCheckService.coreSize: 5
+
 logging:
   level: INFO
   loggers:
