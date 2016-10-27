@@ -31,9 +31,10 @@ Mockserver.
 Hystrix dashboard
 ---
 
+https://github.com/Netflix/Hystrix/wiki/Dashboard
+
 1. Run `docker pull kennedyoliveira/hystrix-dashboard` if  you don't have the image.
 2. Run `docker run --rm -ti -p 7979:7979 kennedyoliveira/hystrix-dashboard`
-
 
 ## Hystrix: Make your application resilient
 

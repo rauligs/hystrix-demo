@@ -4,14 +4,20 @@ import com.hystrix.demo.api.ApplicationResource;
 import com.hystrix.demo.service.ThirdPartyClientHystrix;
 import com.hystrix.demo.service.ThirdPartyClientNoHystrix;
 import com.netflix.config.ConfigurationManager;
+import com.netflix.hystrix.contrib.codahalemetricspublisher.HystrixCodaHaleMetricsPublisher;
+import com.netflix.hystrix.contrib.metrics.eventstream.HystrixMetricsStreamServlet;
+import com.netflix.hystrix.strategy.HystrixPlugins;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.apache.commons.configuration.MapConfiguration;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.mockserver.client.server.MockServerClient;
+import org.mockserver.model.Delay;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -47,13 +53,16 @@ public class DemoApplication extends Application<DemoConfiguration> {
                                 .withHeader("Content-type", "text/plain")
                                 .withStatusCode(200)
                                 .withBody("response from third party")
-                        //.withDelay(new Delay(SECONDS, 1))
+                                .withDelay(new Delay(SECONDS, 2))
                 );
 
 
         CloseableHttpClient httpClient = HttpClientBuilder.create().build();
-
         final ApplicationResource applicationResource = new ApplicationResource(new ThirdPartyClientNoHystrix(httpClient), new ThirdPartyClientHystrix(httpClient));
         environment.jersey().register(applicationResource);
+        environment.getApplicationContext().addServlet(new ServletHolder("hystrixMetricsStream", new HystrixMetricsStreamServlet()), "/metrics/hystrix.stream");
+        HystrixPlugins.reset();
+        final HystrixCodaHaleMetricsPublisher metricsPublisher = new HystrixCodaHaleMetricsPublisher(environment.metrics());
+        HystrixPlugins.getInstance().registerMetricsPublisher(metricsPublisher);
     }
 }
