@@ -17,7 +17,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.model.Delay;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
@@ -53,7 +53,7 @@ public class DemoApplication extends Application<DemoConfiguration> {
                                 .withHeader("Content-type", "text/plain")
                                 .withStatusCode(200)
                                 .withBody("response from third party")
-                                .withDelay(new Delay(SECONDS, 2))
+                                .withDelay(new Delay(MILLISECONDS, 500))
                 );
 
 
